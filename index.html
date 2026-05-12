@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mage Robotics – FTC Team XXXXX</title>
+    <meta name="description" content="Mage Robotics – FTC Team XXXXX. Kanata, Ontario." />
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --black:        #000000;
+            --dark:         #0a080f;
+            --dark-2:       #110d1a;
+            --dark-3:       #18112a;
+            --purple:       #53328F;
+            --purple-light: #8A59E6;
+            --purple-glow:  rgba(138,89,230,.18);
+            --purple-border:rgba(138,89,230,.35);
+            --white:        #ffffff;
+            --off-white:    #e8e0f5;
+            --muted:        #9688b8;
+            --radius-xl:    1.25rem;
+            --radius-2xl:   1.5rem;
+            --radius-3xl:   2rem;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--dark);
+            color: var(--off-white);
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+        h1,h2,h3,h4,h5,h6 { font-family: 'Cinzel', serif; }
+        img { display: block; max-width: 100%; }
+        button { cursor: pointer; font-family: inherit; border: none; background: none; }
+        a { text-decoration: none; color: inherit; }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--dark); }
+        ::-webkit-scrollbar-thumb { background: var(--purple); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--purple-light); }
+
+        .container { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; }
+        @media (min-width: 1024px) { .container { padding: 0 3rem; } }
+
+        .section-label {
+            display: block; font-family: 'DM Sans', sans-serif;
+            font-size: .7rem; letter-spacing: .25em; font-weight: 600;
+            color: var(--purple-light); text-transform: uppercase; margin-bottom: 1rem;
+        }
+        .section-heading {
+            font-size: clamp(1.75rem, 4vw, 2.75rem);
+            font-weight: 700; color: var(--white);
+            letter-spacing: .02em; margin-bottom: 1rem;
+        }
+        .section-body {
+            color: var(--muted); max-width: 44ch;
+            margin: 0 auto; line-height: 1.8;
+        }
+        .section-intro { text-align: center; margin-bottom: 4rem; }
+
+        /* ─── Buttons ─── */
+        .btn {
+            display: inline-flex; align-items: center; gap: .5rem;
+            padding: .75rem 2rem; border-radius: 9999px;
+            font-weight: 600; font-size: 1rem;
+            transition: background .2s, transform .15s, box-shadow .2s;
+            position: relative; overflow: hidden;
+        }
+        .btn::after {
+            content: ''; position: absolute; top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,.12), transparent);
+            transform: rotate(45deg) translateX(-100%);
+            transition: transform .55s;
+        }
+        .btn:hover::after { transform: rotate(45deg) translateX(100%); }
+        .btn-primary { background: var(--purple); color: #fff; border: 1px solid rgba(138,89,230,.4); }
+        .btn-primary:hover { background: var(--purple-light); transform: translateY(-1px); box-shadow: 0 8px 32px rgba(138,89,230,.4); }
+        .btn-outline { background: transparent; color: #fff; border: 1.5px solid rgba(255,255,255,.3); }
+        .btn-outline:hover { background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.7); }
+
+        /* ─── Card ─── */
+        .card {
+            background: var(--dark-2);
+            border-radius: var(--radius-2xl);
+            border: 1px solid var(--purple-border);
+            box-shadow: 0 8px 30px rgba(0,0,0,.3);
+            transition: transform .3s cubic-bezier(.4,0,.2,1), box-shadow .3s, border-color .3s;
+        }
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 50px rgba(83,50,143,.2);
+            border-color: var(--purple-light);
+        }
+
+        /* ─── Picture borders ─── */
+        .pic-frame {
+            border: 2px solid var(--purple-light);
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            box-shadow: 0 0 24px rgba(138,89,230,.3);
+        }
+
+        /* ─── NAV ─── */
+        #nav {
+            position: fixed; top: 0; width: 100%; z-index: 50;
+            transition: background .3s, box-shadow .3s, border-color .3s;
+        }
+        #nav.scrolled {
+            background: rgba(10,8,15,.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--purple-border);
+            box-shadow: 0 2px 24px rgba(83,50,143,.15);
+        }
+        .nav-inner {
+            display: flex; align-items: center; justify-content: space-between;
+            height: 5rem;
+        }
+        .nav-logo { display: flex; align-items: center; gap: .75rem; }
+        .nav-logo img { width: 2.75rem; height: 2.75rem; border-radius: .625rem; object-fit: cover; border: 1px solid var(--purple-border); }
+        .nav-logo-placeholder {
+            width: 2.75rem; height: 2.75rem; border-radius: .625rem;
+            background: var(--purple); border: 1px solid var(--purple-light);
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Cinzel', serif; font-weight: 900; font-size: 1rem; color: #fff;
+        }
+        .nav-logo-text .name { font-family: 'Cinzel', serif; font-weight: 700; font-size: 1rem; color: #fff; line-height: 1; transition: color .3s; }
+        .nav-logo-text .sub  { font-size: .6rem; letter-spacing: .25em; color: rgba(255,255,255,.5); transition: color .3s; }
+        .nav-links { display: none; align-items: center; gap: 2rem; }
+        @media (min-width: 768px) { .nav-links { display: flex; } }
+        .nav-link {
+            font-family: 'DM Sans', sans-serif; font-size: .85rem; font-weight: 500;
+            color: rgba(255,255,255,.8); position: relative; transition: color .2s; letter-spacing: .04em;
+        }
+        .nav-link::after {
+            content: ''; position: absolute; bottom: -3px; left: 0;
+            width: 0; height: 1.5px; background: var(--purple-light);
+            transition: width .3s;
+        }
+        .nav-link:hover { color: #fff; }
+        .nav-link:hover::after { width: 100%; }
+        .nav-sponsor { display: none; }
+        @media (min-width: 768px) { .nav-sponsor { display: inline-flex; } }
+        #nav:not(.scrolled) .nav-sponsor {
+            background: rgba(138,89,230,.15);
+            border: 1.5px solid rgba(138,89,230,.5);
+        }
+        .hamburger { display: flex; padding: .5rem; color: #fff; }
+        @media (min-width: 768px) { .hamburger { display: none; } }
+        .mobile-menu {
+            display: none; background: var(--dark);
+            border-top: 1px solid var(--purple-border);
+            padding: 1rem 0;
+        }
+        .mobile-menu.open { display: block; }
+        .mobile-link {
+            display: block; width: 100%;
+            text-align: left; padding: .75rem 1.5rem;
+            font-weight: 500; color: var(--off-white);
+            transition: background .2s, color .2s;
+        }
+        .mobile-link:hover { background: var(--dark-2); color: var(--purple-light); }
+        .mobile-menu-footer { padding: 1rem 1.5rem; }
+
+        /* ─── HERO ─── */
+        #hero {
+            position: relative; min-height: 100svh;
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden; background: var(--black);
+        }
+        .hero-bg { position: absolute; inset: 0; }
+        .hero-bg img { width: 100%; height: 100%; object-fit: cover; opacity: .5; }
+        .hero-bg-placeholder {
+            position: absolute; inset: 0;
+            background: radial-gradient(ellipse 120% 80% at 60% 40%, #2a1055 0%, #0a080f 60%);
+        }
+        .hero-lightning {
+            position: absolute; inset: 0;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600' viewBox='0 0 600 600'%3E%3Cg fill='none' stroke='%238A59E6' stroke-width='.5' opacity='.08'%3E%3Cline x1='300' y1='0' x2='200' y2='200'/%3E%3Cline x1='200' y1='200' x2='280' y2='200'/%3E%3Cline x1='280' y1='200' x2='150' y2='600'/%3E%3Cline x1='450' y1='0' x2='350' y2='250'/%3E%3Cline x1='350' y1='250' x2='420' y2='250'/%3E%3Cline x1='420' y1='250' x2='300' y2='600'/%3E%3C/g%3E%3C/svg%3E") center/cover;
+            opacity: .4;
+        }
+        .hero-bg::after {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(135deg, rgba(0,0,0,.92) 0%, rgba(10,8,15,.7) 50%, rgba(0,0,0,.4) 100%);
+        }
+        .hero-content { position: relative; z-index: 1; text-align: center; padding: 0 1.5rem; width: 100%; max-width: 1280px; margin: 0 auto; }
+        .hero-badge {
+            display: inline-flex; align-items: center; gap: .5rem;
+            background: rgba(138,89,230,.12); backdrop-filter: blur(8px);
+            border: 1px solid var(--purple-border); border-radius: 9999px;
+            padding: .5rem 1.25rem; margin-bottom: 2rem;
+            animation: fadeInUp .6s ease both;
+        }
+        @media (max-width: 768px) { .hero-badge { visibility: hidden; } }
+        .hero-badge .team-num { color: var(--purple-light); font-weight: 700; font-size: .85rem; }
+        .hero-badge .sep { color: rgba(255,255,255,.3); }
+        .hero-badge .loc { color: rgba(255,255,255,.7); font-size: .85rem; }
+        .hero-h1 {
+            font-size: clamp(2.5rem, 7vw, 5.5rem);
+            font-weight: 900; color: #fff; line-height: 1.05;
+            letter-spacing: .04em; margin-bottom: .5rem;
+            animation: fadeInUp .6s .1s ease both;
+        }
+        .hero-h1 .gradient-text {
+            background: linear-gradient(135deg, var(--purple-light), #c4a8ff);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .hero-sub {
+            font-size: clamp(1rem, 2vw, 1.2rem); color: rgba(255,255,255,.7);
+            max-width: 50ch; margin: 0 auto 2.5rem; line-height: 1.8;
+            animation: fadeInUp .6s .2s ease both;
+        }
+        .hero-ctas {
+            display: flex; flex-wrap: wrap; gap: 1rem;
+            justify-content: center; margin-bottom: 4rem;
+            animation: fadeInUp .6s .3s ease both;
+        }
+        .hero-stats {
+            display: grid; grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem; border-top: 1px solid rgba(138,89,230,.2); padding-top: 2.5rem;
+            animation: fadeInUp .6s .4s ease both;
+        }
+        @media (min-width: 640px) { .hero-stats { grid-template-columns: repeat(4,1fr); } }
+        .stat-num { font-family: 'Cinzel', serif; font-size: 2.5rem; font-weight: 700; color: #fff; }
+        .stat-lbl { font-size: .8rem; color: rgba(255,255,255,.5); margin-top: .25rem; letter-spacing: .04em; }
+        .scroll-hint {
+            position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
+            color: rgba(255,255,255,.4); cursor: pointer; animation: bounce 2s infinite;
+            transition: color .2s; z-index: 1;
+        }
+        .scroll-hint:hover { color: var(--purple-light); }
+
+        /* ─── ABOUT (Who We Are / Intro) ─── */
+        #about { padding: 6rem 0; background: var(--dark); }
+        .about-grid { display: grid; gap: 3rem; }
+        @media (min-width: 1024px) { .about-grid { grid-template-columns: 1fr 1fr; align-items: center; } }
+        .about-img-wrap { position: relative; }
+        .about-img-placeholder {
+            aspect-ratio: 4/3; border-radius: var(--radius-2xl);
+            background: var(--dark-3);
+            display: flex; align-items: center; justify-content: center;
+            color: var(--muted); font-size: .9rem;
+        }
+        .about-img-placeholder img { width: 100%; height: 100%; object-fit: cover; }
+        .values-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.25rem; margin-top: 4rem;
+        }
+        .value-card { padding: 1.75rem; }
+        .value-icon {
+            width: 3rem; height: 3rem; background: var(--purple-glow);
+            border: 1px solid var(--purple-border); border-radius: .75rem;
+            display: flex; align-items: center; justify-content: center; margin-bottom: 1.25rem;
+        }
+        .value-icon svg { width: 1.5rem; height: 1.5rem; stroke: var(--purple-light); }
+        .value-title { font-family: 'Cinzel', serif; font-size: 1rem; font-weight: 600; margin-bottom: .5rem; color: var(--white); }
+        .value-desc { font-size: .875rem; color: var(--muted); line-height: 1.7; }
+
+        /* ─── MISSION BOX ─── */
+        .mission-box {
+            background: var(--dark-3);
+            border: 1px solid var(--purple-border);
+            border-radius: var(--radius-3xl);
+            padding: 3.5rem 2.5rem; text-align: center;
+            position: relative; overflow: hidden; margin-top: 4rem;
+        }
+        .mission-box .glow-1, .mission-box .glow-2 {
+            position: absolute; border-radius: 50%; filter: blur(80px); opacity: .15;
+        }
+        .mission-box .glow-1 { top: -5rem; right: -5rem; width: 22rem; height: 22rem; background: var(--purple-light); }
+        .mission-box .glow-2 { bottom: -5rem; left: -5rem; width: 22rem; height: 22rem; background: var(--purple); }
+        .mission-label { color: var(--purple-light); font-size: .7rem; letter-spacing: .25em; font-weight: 700; text-transform: uppercase; margin-bottom: 1rem; display: block; position: relative; z-index: 1; font-family: 'DM Sans', sans-serif; }
+        .mission-quote { font-family: 'Cinzel', serif; font-size: clamp(1.1rem, 3vw, 1.5rem); font-weight: 500; color: #fff; line-height: 1.7; max-width: 56ch; margin: 0 auto; position: relative; z-index: 1; }
+        .mission-divider { display: flex; align-items: center; justify-content: center; gap: 1rem; margin-top: 2rem; position: relative; z-index: 1; }
+        .mission-divider .line { width: 3rem; height: 1.5px; background: var(--purple-light); }
+        .mission-divider span { color: var(--muted); font-size: .875rem; }
+
+        /* ─── GOALS / EVENTS CAROUSEL ─── */
+        #goals { padding: 6rem 0; background: var(--dark-2); }
+        .carousel-wrap { position: relative; overflow: hidden; border-radius: var(--radius-2xl); }
+        .carousel-track { display: flex; transition: transform .5s cubic-bezier(.4,0,.2,1); will-change: transform; }
+        .carousel-slide {
+            flex: 0 0 100%; position: relative;
+            aspect-ratio: 16/9; overflow: hidden; border-radius: var(--radius-2xl);
+            border: 1.5px solid var(--purple-border);
+        }
+        .carousel-slide img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s ease; }
+        .carousel-slide:hover img { transform: scale(1.02); }
+        .carousel-slide-placeholder {
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, var(--dark-3), #1e103c);
+            display: flex; align-items: center; justify-content: center;
+            color: var(--muted); font-size: 1rem;
+        }
+        .carousel-overlay {
+            position: absolute; inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,.85) 0%, transparent 55%);
+        }
+        .carousel-caption { position: absolute; bottom: 0; left: 0; right: 0; padding: 2rem; }
+        .carousel-cap-sub { display: flex; align-items: center; gap: .5rem; color: rgba(255,255,255,.65); font-size: .875rem; margin-bottom: .5rem; }
+        .carousel-cap-sub svg { width: 1rem; height: 1rem; stroke: var(--purple-light); }
+        .carousel-cap-title { font-family: 'Cinzel', serif; font-size: clamp(1rem, 2.5vw, 1.3rem); font-weight: 600; color: #fff; }
+        .carousel-btn {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            width: 2.75rem; height: 2.75rem;
+            background: rgba(138,89,230,.2); backdrop-filter: blur(8px);
+            border: 1px solid var(--purple-border); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 16px rgba(0,0,0,.3);
+            transition: background .2s, transform .2s; z-index: 2;
+        }
+        .carousel-btn:hover { background: var(--purple); transform: translateY(-50%) scale(1.08); }
+        .carousel-btn svg { width: 1.2rem; height: 1.2rem; stroke: #fff; }
+        .carousel-prev { left: 1rem; }
+        .carousel-next { right: 1rem; }
+        .carousel-dots { display: flex; justify-content: center; gap: .5rem; margin-top: 1.5rem; }
+        .dot {
+            width: .5rem; height: .5rem; border-radius: 9999px;
+            background: var(--dark-3); border: 1px solid var(--purple-border);
+            transition: background .3s, width .3s; cursor: pointer;
+        }
+        .dot.active { background: var(--purple-light); width: 2rem; }
+
+        /* ─── TIMELINE ─── */
+        #timeline { padding: 6rem 0; background: var(--dark); }
+        .timeline-container { position: relative; }
+        .timeline-line {
+            position: absolute; left: 1.25rem; top: 0; bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, var(--purple), var(--purple-light));
+        }
+        @media (min-width: 768px) { .timeline-line { left: 50%; transform: translateX(-50%); } }
+        .timeline-items { display: flex; flex-direction: column; gap: 0; }
+        .timeline-item {
+            display: flex; align-items: flex-start;
+            opacity: 0; transform: translateY(2rem);
+            transition: opacity .7s ease, transform .7s ease;
+            padding: 1.5rem 0;
+        }
+        .timeline-item.visible { opacity: 1; transform: translateY(0); }
+        @media (min-width: 768px) {
+            .timeline-item { align-items: center; }
+            .timeline-item:nth-child(odd)  { flex-direction: row;         transform: translateX( 46.3%); }
+            .timeline-item:nth-child(even) { flex-direction: row-reverse; transform: translateX(-46.3%); }
+            .timeline-item.visible { transform: translateX(0); }
+        }
+        .timeline-node-wrap { position: absolute; left: 0; flex-shrink: 0; z-index: 1; }
+        @media (min-width: 768px) { .timeline-node-wrap { position: relative; left: auto; margin: 0 1.5rem; } }
+        .timeline-node {
+            width: 2.5rem; height: 2.5rem; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            position: relative; flex-shrink: 0;
+        }
+        .timeline-node.highlight { background: var(--purple); box-shadow: 0 0 20px rgba(138,89,230,.5); }
+        .timeline-node.normal { background: var(--dark-3); border: 2px solid var(--purple); }
+        .timeline-node svg { width: 1.25rem; height: 1.25rem; }
+        .timeline-node.highlight svg { stroke: #fff; }
+        .timeline-node.normal svg { stroke: var(--purple-light); }
+        .timeline-node::after {
+            content: ''; position: absolute; inset: -4px;
+            border-radius: 50%; background: rgba(138,89,230,.2);
+            animation: pulse 2s infinite;
+        }
+        .timeline-card { margin-left: 4rem; padding: 1.5rem; flex: 1; }
+        @media (min-width: 768px) { .timeline-card { margin-left: 0; width: calc(50% - 3rem); flex: none; } }
+        .timeline-meta { display: flex; align-items: center; gap: .75rem; margin-bottom: .75rem; flex-wrap: wrap; }
+        .phase-badge {
+            font-family: 'DM Sans', sans-serif; font-size: .7rem; font-weight: 700;
+            letter-spacing: .08em; text-transform: uppercase; padding: .25rem .75rem; border-radius: 9999px;
+        }
+        .phase-badge.highlight { background: var(--purple); color: #fff; }
+        .phase-badge.normal { background: var(--dark-3); color: var(--purple-light); border: 1px solid var(--purple-border); }
+        .timeline-period { font-size: .875rem; color: var(--muted); }
+        .timeline-title { font-family: 'Cinzel', serif; font-size: 1.1rem; font-weight: 600; color: var(--white); margin-bottom: .5rem; }
+        .timeline-desc { font-size: .875rem; color: var(--muted); line-height: 1.65; }
+
+        /* ─── TEAM ─── */
+        #team { padding: 6rem 0; background: var(--dark-2); }
+        .team-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;
+        }
+        @media (min-width: 640px)  { .team-grid { grid-template-columns: repeat(3,1fr); } }
+        @media (min-width: 1024px) { .team-grid { grid-template-columns: repeat(5,1fr); } }
+        .team-card { text-align: center; overflow: hidden; }
+        .team-photo {
+            aspect-ratio: 1; overflow: hidden;
+            background: var(--dark-3); position: relative;
+            transition: transform .3s;
+        }
+        .team-photo img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s ease; }
+        .team-card:hover .team-photo img { transform: scale(1.06); }
+        .team-photo-placeholder {
+            width: 100%; height: 100%;
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Cinzel', serif; font-size: 2rem; font-weight: 700; color: var(--purple);
+        }
+        .team-photo-overlay {
+            position: absolute; inset: 0;
+            background: linear-gradient(to top, rgba(83,50,143,.8) 0%, transparent 60%);
+            opacity: 0; transition: opacity .3s;
+            display: flex; align-items: flex-end; padding: 1rem;
+        }
+        .team-card:hover .team-photo-overlay { opacity: 1; }
+        .team-dept-badge {
+            font-family: 'DM Sans', sans-serif; font-size: .65rem; font-weight: 700;
+            letter-spacing: .1em; text-transform: uppercase;
+            color: #fff; background: rgba(138,89,230,.6);
+            border: 1px solid var(--purple-border); border-radius: 9999px;
+            padding: .2rem .6rem;
+        }
+        .team-info { padding: 1rem .75rem .75rem; }
+        .team-name { font-family: 'Cinzel', serif; font-size: .95rem; font-weight: 600; color: var(--white); margin-bottom: .2rem; }
+        .team-role { font-size: .8rem; color: var(--muted); }
+
+        /* ─── STUDENT IMPACT ─── */
+        #impact { padding: 6rem 0; background: var(--dark); }
+        .impact-main { display: grid; gap: 2rem; }
+        @media (min-width: 1024px) { .impact-main { grid-template-columns: 1fr 1fr; align-items: center; } }
+        .impact-imgs { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .impact-img-slot {
+            aspect-ratio: 4/3; border-radius: var(--radius-xl);
+            background: var(--dark-3); overflow: hidden;
+        }
+        .impact-img-slot img { width: 100%; height: 100%; object-fit: cover; }
+        .impact-img-slot:first-child { grid-column: span 2; aspect-ratio: 16/7; }
+        .impact-nums { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 2.5rem; }
+        .impact-stat { text-align: center; padding: 1.5rem; }
+        .impact-num { font-family: 'Cinzel', serif; font-size: clamp(2rem, 4vw, 2.75rem); font-weight: 700; color: var(--purple-light); }
+        .impact-lbl { font-size: .875rem; color: var(--muted); margin-top: .25rem; }
+
+        /* ─── SPONSORSHIP ─── */
+        #sponsors { padding: 6rem 0; background: var(--dark-2); }
+        .sponsor-tiers { display: flex; flex-direction: column; gap: 3rem; }
+        .sponsor-tier h3 {
+            font-family: 'DM Sans', sans-serif; font-size: .7rem; font-weight: 700;
+            letter-spacing: .2em; text-transform: uppercase; color: var(--muted);
+            margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1rem;
+        }
+        .sponsor-tier h3::after { content: ''; flex: 1; height: 1px; background: var(--purple-border); }
+        .sponsor-logos { display: flex; flex-wrap: wrap; align-items: center; gap: 1.5rem; }
+        .sponsor-slot {
+            background: var(--dark-3); border: 1px solid var(--purple-border);
+            border-radius: var(--radius-xl); padding: 1.25rem 2rem;
+            min-width: 140px; text-align: center; color: var(--muted); font-size: .875rem;
+            transition: border-color .2s, background .2s;
+        }
+        .sponsor-slot:hover { border-color: var(--purple-light); background: var(--purple-glow); }
+        .sponsor-cta {
+            background: var(--dark-3); border: 1px solid var(--purple-border);
+            border-radius: var(--radius-3xl); padding: 3.5rem 2.5rem;
+            text-align: center; position: relative; overflow: hidden; margin-top: 4rem;
+        }
+        .sponsor-cta .glow { position: absolute; top: -6rem; right: -6rem; width: 24rem; height: 24rem; background: var(--purple); border-radius: 50%; filter: blur(80px); opacity: .1; }
+        .sponsor-cta h2 { font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 700; color: #fff; margin-bottom: 1rem; position: relative; }
+        .sponsor-cta p { color: var(--muted); max-width: 44ch; margin: 0 auto 2rem; line-height: 1.75; position: relative; }
+        .sponsor-why { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap: 1.25rem; margin-top: 3rem; text-align: left; }
+        .why-item { background: var(--dark-2); border: 1px solid var(--purple-border); border-radius: var(--radius-xl); padding: 1.5rem; }
+        .why-num { font-family: 'Cinzel', serif; font-size: 2rem; font-weight: 900; color: var(--purple-light); margin-bottom: .5rem; opacity: .5; }
+        .why-title { font-family: 'Cinzel', serif; font-size: .95rem; color: var(--white); margin-bottom: .5rem; }
+        .why-desc { font-size: .85rem; color: var(--muted); line-height: 1.65; }
+
+        /* ─── RECRUITMENT ─── */
+        #joinus { padding: 6rem 0; background: var(--dark); }
+        .recruit-grid { display: grid; gap: 2rem; }
+        @media (min-width: 1024px) { .recruit-grid { grid-template-columns: 1fr 1fr; } }
+        .recruit-form-wrap { background: var(--dark-2); border: 1px solid var(--purple-border); border-radius: var(--radius-3xl); padding: 2.5rem; }
+        .recruit-form-wrap h3 { font-family: 'Cinzel', serif; font-size: 1.25rem; font-weight: 600; color: var(--white); margin-bottom: 1.5rem; }
+        .form-row { display: grid; gap: 1rem; margin-bottom: 1rem; }
+        @media (min-width: 640px) { .form-row.two { grid-template-columns: 1fr 1fr; } }
+        label { display: block; font-size: .8rem; font-weight: 600; color: var(--off-white); letter-spacing: .04em; margin-bottom: .4rem; }
+        .form-input, .form-select, .form-textarea {
+            width: 100%; padding: .75rem 1rem;
+            background: var(--dark-3); border: 1px solid var(--purple-border);
+            border-radius: .75rem; color: var(--off-white);
+            font-family: 'DM Sans', sans-serif; font-size: .9rem;
+            outline: none; transition: border-color .2s, box-shadow .2s;
+        }
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            border-color: var(--purple-light);
+            box-shadow: 0 0 0 3px rgba(138,89,230,.1);
+        }
+        .form-select { appearance: none; cursor: pointer; }
+        .form-textarea { resize: none; min-height: 7rem; }
+        .form-error { color: #f87171; font-size: .875rem; margin-top: -.5rem; display: none; }
+        .form-error.show { display: block; }
+        .form-submit { width: 100%; padding: 1rem; font-size: 1rem; display: flex; align-items: center; justify-content: center; gap: .5rem; margin-top: 1rem; border-radius: .875rem; }
+        .form-submit svg { width: 1.2rem; height: 1.2rem; stroke: currentColor; }
+        .spinner { animation: spin .8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .form-success { text-align: center; padding: 3rem 1rem; }
+        .form-success svg { margin: 0 auto 1rem; stroke: var(--purple-light); }
+        .form-success h3 { font-family: 'Cinzel', serif; font-size: 1.5rem; font-weight: 600; color: var(--white); margin-bottom: .5rem; }
+        .form-success p { color: var(--muted); margin-bottom: 1.5rem; }
+        .recruit-info { display: flex; flex-direction: column; gap: 1.5rem; }
+        .recruit-info-card { background: var(--dark-2); border: 1px solid var(--purple-border); border-radius: var(--radius-2xl); padding: 2rem; }
+        .recruit-info-card h4 { font-family: 'Cinzel', serif; font-size: 1rem; font-weight: 600; color: var(--white); margin-bottom: 1rem; }
+        .recruit-info-card p, .recruit-info-card li { font-size: .875rem; color: var(--muted); line-height: 1.7; }
+        .recruit-info-card ul { padding-left: 1.25rem; display: flex; flex-direction: column; gap: .4rem; }
+        .recruit-quick-links { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .quick-link-btn {
+            background: var(--dark-3); border: 1px solid var(--purple-border);
+            border-radius: var(--radius-xl); padding: 1.25rem 1rem;
+            text-align: center; cursor: pointer; transition: border-color .2s, background .2s;
+            font-size: .875rem; font-weight: 600; color: var(--off-white);
+        }
+        .quick-link-btn:hover { border-color: var(--purple-light); background: var(--purple-glow); color: var(--purple-light); }
+
+        /* ─── CONTACT ─── */
+        #contact { padding: 6rem 0; background: var(--dark-2); }
+        .contact-grid { display: grid; gap: 2rem; }
+        @media (min-width: 1024px) { .contact-grid { grid-template-columns: 1fr .85fr; } }
+        .contact-form-wrap { background: var(--dark-3); border: 1px solid var(--purple-border); border-radius: var(--radius-3xl); padding: 2.5rem; }
+        .contact-form-wrap h3 { font-family: 'Cinzel', serif; font-size: 1.2rem; font-weight: 600; color: var(--white); margin-bottom: 1.5rem; }
+        .contact-sidebar { display: flex; flex-direction: column; gap: 1.5rem; }
+        .contact-info-card { background: var(--dark-3); border: 1px solid var(--purple-border); border-radius: var(--radius-2xl); padding: 2rem; }
+        .contact-info-card h3 { font-family: 'Cinzel', serif; font-size: 1rem; font-weight: 600; color: var(--white); margin-bottom: 1.25rem; }
+        .contact-link-row {
+            display: flex; align-items: center; gap: 1rem;
+            padding: .875rem; border-radius: .75rem;
+            background: rgba(255,255,255,.03); margin-bottom: .75rem;
+            transition: background .2s; cursor: pointer;
+        }
+        .contact-link-row:hover { background: var(--purple-glow); }
+        .contact-link-icon {
+            width: 2.75rem; height: 2.75rem; border-radius: .75rem;
+            background: var(--dark-2); border: 1px solid var(--purple-border);
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        }
+        .contact-link-icon svg { width: 1.25rem; height: 1.25rem; stroke: var(--purple-light); }
+        .contact-link-title { font-weight: 600; font-size: .9rem; color: var(--white); }
+        .contact-link-sub { font-size: .8rem; color: var(--muted); }
+
+        /* ─── FOOTER ─── */
+        footer { background: var(--black); color: #fff; padding: 4rem 0 0; border-top: 1px solid var(--purple-border); }
+        .footer-grid { display: grid; gap: 3rem; }
+        @media (min-width: 768px) { .footer-grid { grid-template-columns: 2fr 1fr 1fr; } }
+        .footer-logo { display: flex; align-items: center; gap: .75rem; margin-bottom: 1.5rem; }
+        .footer-logo-placeholder {
+            width: 3rem; height: 3rem; border-radius: .75rem;
+            background: var(--purple); border: 1px solid var(--purple-light);
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Cinzel', serif; font-weight: 900; font-size: 1.1rem; color: #fff;
+        }
+        .footer-logo-name { font-family: 'Cinzel', serif; font-weight: 700; font-size: 1.1rem; }
+        .footer-logo-sub { font-size: .6rem; letter-spacing: .2em; color: rgba(255,255,255,.4); text-transform: uppercase; }
+        .footer-desc { color: rgba(255,255,255,.5); font-size: .875rem; line-height: 1.75; max-width: 36ch; margin-bottom: 1.5rem; }
+        .footer-socials { display: flex; gap: .75rem; }
+        .footer-social {
+            width: 2.5rem; height: 2.5rem; border-radius: .5rem;
+            background: rgba(138,89,230,.1); border: 1px solid var(--purple-border);
+            display: flex; align-items: center; justify-content: center;
+            transition: background .2s, border-color .2s;
+        }
+        .footer-social:hover { background: var(--purple); border-color: var(--purple-light); }
+        .footer-social svg { width: 1.2rem; height: 1.2rem; stroke: rgba(255,255,255,.7); }
+        .footer-col h4 { font-family: 'Cinzel', serif; font-weight: 600; font-size: .95rem; margin-bottom: 1.25rem; }
+        .footer-links { list-style: none; display: flex; flex-direction: column; gap: .6rem; }
+        .footer-links li button {
+            color: rgba(255,255,255,.5); font-size: .875rem;
+            background: none; border: none; cursor: pointer;
+            transition: color .2s; text-align: left;
+        }
+        .footer-links li button:hover { color: var(--purple-light); }
+        .footer-contact-items { display: flex; flex-direction: column; gap: .875rem; }
+        .footer-contact-item { display: flex; align-items: center; gap: .75rem; font-size: .875rem; color: rgba(255,255,255,.5); }
+        .footer-contact-item svg { width: 1rem; height: 1rem; stroke: var(--purple-light); flex-shrink: 0; }
+        .footer-contact-item a { transition: color .2s; }
+        .footer-contact-item a:hover { color: #fff; }
+        .footer-bottom {
+            margin-top: 3rem; padding: 1.5rem 0;
+            border-top: 1px solid rgba(138,89,230,.1);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .footer-copy { color: rgba(255,255,255,.3); font-size: .8rem; text-align: center; }
+        .footer-copy span { color: var(--purple-light); }
+
+        /* ─── Back to top ─── */
+        .back-to-top {
+            position: fixed; bottom: 2rem; right: 2rem;
+            width: 3rem; height: 3rem; border-radius: 50%;
+            background: var(--purple); color: #fff;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 8px 24px rgba(83,50,143,.4);
+            transition: background .2s, transform .2s; z-index: 40;
+        }
+        .back-to-top:hover { background: var(--purple-light); transform: scale(1.1); }
+        .back-to-top svg { width: 1.25rem; height: 1.25rem; stroke: #fff; }
+
+        /* ─── Animations ─── */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(2rem); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes bounce {
+            0%,100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(8px); }
+        }
+        @keyframes pulse {
+            0%,100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.4); opacity: 0; }
+        }
+        .fade-in-section {
+            opacity: 0; transform: translateY(1.5rem);
+            transition: opacity .6s ease, transform .6s ease;
+        }
+        .fade-in-section.visible { opacity: 1; transform: translateY(0); }
+        .lift:hover { transform: translateY(-6px) !important; }
+    </style>
+</head>
+<body>
+
+<!-- ─── NAV ─── -->
+<nav id="nav">
+    <div class="container">
+        <div class="nav-inner">
+            <a class="nav-logo" href="#" onclick="window.scrollTo({top:0,behavior:'smooth'}); return false;">
+                <!-- Replace with: <img src="assets/logo.png" alt="Mage Robotics Logo" /> -->
+                <div class="nav-logo-placeholder">M</div>
+                <div class="nav-logo-text">
+                    <div class="name">MAGE</div>
+                    <div class="sub">ROBOTICS</div>
+                </div>
+            </a>
+            <div class="nav-links">
+                <button class="nav-link" onclick="navScrollTo('#about')">About</button>
+                <button class="nav-link" onclick="navScrollTo('#goals')">Goals</button>
+                <button class="nav-link" onclick="navScrollTo('#timeline')">Timeline</button>
+                <button class="nav-link" onclick="navScrollTo('#team')">Team</button>
+                <button class="nav-link" onclick="navScrollTo('#sponsors')">Sponsors</button>
+                <button class="nav-link" onclick="navScrollTo('#contact')">Contact</button>
+                <button class="nav-link" onclick="navScrollTo('#joinus')">Join Us</button>
+            </div>
+            <button class="btn btn-primary nav-sponsor" onclick="navScrollTo('#sponsors')" style="padding:.6rem 1.4rem;font-size:.85rem;">Become a Sponsor</button>
+            <button class="hamburger" id="hamburgerBtn" aria-label="Menu">
+                <svg id="menuIcon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                <svg id="closeIcon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="display:none;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+        </div>
+        <div class="mobile-menu" id="mobileMenu">
+            <button class="mobile-link" onclick="navScrollTo('#about');closeMobile()">About</button>
+            <button class="mobile-link" onclick="navScrollTo('#goals');closeMobile()">Goals</button>
+            <button class="mobile-link" onclick="navScrollTo('#timeline');closeMobile()">Timeline</button>
+            <button class="mobile-link" onclick="navScrollTo('#team');closeMobile()">Team</button>
+            <button class="mobile-link" onclick="navScrollTo('#sponsors');closeMobile()">Sponsors</button>
+            <button class="mobile-link" onclick="navScrollTo('#contact');closeMobile()">Contact</button>
+            <button class="mobile-link" onclick="navScrollTo('#joinus');closeMobile()">Join Us</button>
+            <div class="mobile-menu-footer">
+                <button class="btn btn-primary" style="width:100%;border-radius:.875rem;" onclick="navScrollTo('#sponsors');closeMobile()">Become a Sponsor</button>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- ─── HERO ─── -->
+<section id="hero">
+    <div class="hero-bg">
+        <!-- <img src="assets/hero.jpg" alt="Group photo" loading="eager" /> -->
+        <div class="hero-bg-placeholder"></div>
+        <div class="hero-lightning"></div>
+    </div>
+    <div class="hero-content">
+        <div class="hero-badge">
+            <span class="team-num">FTC TEAM XXXXX</span>
+            <span class="sep">|</span>
+            <span class="loc">Ontario, Canada</span>
+        </div>
+        <h1 class="hero-h1">
+            Cast in Code.<br/>
+            <span class="gradient-text">Built to Compete.</span>
+        </h1>
+        <p class="hero-sub">
+            Mage Robotics is a FIRST Tech Challenge team from Kanata, Ontario — driven by curiosity, powered by collaboration, and forged in competition.
+        </p>
+        <div class="hero-ctas">
+            <button class="btn btn-primary" onclick="navScrollTo('#sponsors')" style="padding:.875rem 2.25rem;font-size:1.05rem;">
+                Support Our Mission
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </button>
+            <button class="btn btn-outline" onclick="navScrollTo('#joinus')" style="padding:.875rem 2.25rem;font-size:1.05rem;">Join the Team</button>
+        </div>
+        <div class="hero-stats">
+            <div><div class="stat-num">–</div><div class="stat-lbl">Team Members</div></div>
+            <div><div class="stat-num">1</div><div class="stat-lbl">Year In Operation</div></div>
+            <div><div class="stat-num">–</div><div class="stat-lbl">Sponsors & Supporters</div></div>
+            <div><div class="stat-num">–</div><div class="stat-lbl">Competitions Entered</div></div>
+        </div>
+    </div>
+    <button class="scroll-hint" onclick="navScrollTo('#about')" aria-label="Scroll down">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+    </button>
+</section>
+
+<!-- ─── ABOUT (1 — Who We Are / Steal Intro) ─── -->
+<section id="about" style="padding:6rem 0;background:var(--dark);">
+    <div class="container">
+        <div class="section-intro fade-in-section">
+            <span class="section-label">Who We Are</span>
+            <h2 class="section-heading">A Rookie Team. A Big Vision.</h2>
+            <p class="section-body">
+                Mage Robotics is a new FTC team from Kanata, Ontario. We're a group of passionate students committed to learning, building, and competing — with ambitions that go far beyond our first season.
+            </p>
+        </div>
+
+        <!-- Group photo placeholder -->
+        <div class="about-grid fade-in-section" style="margin-bottom:4rem;">
+            <div class="about-img-wrap">
+                <!-- Replace with actual group photo (everyone in uniform) -->
+                <div class="pic-frame about-img-placeholder" style="aspect-ratio:4/3;background:var(--dark-3);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:.9rem;">
+                    Group Photo — everyone in uniform
+                </div>
+            </div>
+            <div>
+                <span class="section-label">Our Story</span>
+                <h3 class="section-heading" style="font-size:clamp(1.4rem,3vw,2rem);">From Kanata, For the Future</h3>
+                <p style="color:var(--muted);line-height:1.8;margin-bottom:1.25rem;font-size:.95rem;">
+                    We're a first-year FTC team — passionate rookies with a serious drive. Founded by students who believe robotics is more than a competition: it's a launchpad for engineers, designers, strategists, and leaders of tomorrow.
+                </p>
+                <p style="color:var(--muted);line-height:1.8;font-size:.95rem;">
+                    Every bolt tightened and line of code written is a step toward something larger. We're here to build, to learn, and to leave our mark.
+                </p>
+                <div style="margin-top:2rem;display:flex;gap:1rem;flex-wrap:wrap;">
+                    <button class="btn btn-primary" onclick="navScrollTo('#team')" style="border-radius:.875rem;padding:.7rem 1.6rem;">Meet the Team</button>
+                    <button class="btn btn-outline" onclick="navScrollTo('#goals')" style="border-radius:.875rem;padding:.7rem 1.6rem;color:var(--off-white);">Our Goals</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Core Values -->
+        <div class="values-grid">
+            <div class="card value-card fade-in-section lift">
+                <div class="value-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z"/></svg>
+                </div>
+                <div class="value-title">Innovation</div>
+                <div class="value-desc">Creative problem-solving and first-principles engineering at every stage of our build.</div>
+            </div>
+            <div class="card value-card fade-in-section lift" style="transition-delay:.1s">
+                <div class="value-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"/></svg>
+                </div>
+                <div class="value-title">Teamwork</div>
+                <div class="value-desc">Diverse skills unified under one goal — collaboration is our greatest mechanism.</div>
+            </div>
+            <div class="card value-card fade-in-section lift" style="transition-delay:.2s">
+                <div class="value-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 004.486-6.336l-3.276 3.277a3.004 3.004 0 01-2.25-2.25l3.276-3.276a4.5 4.5 0 00-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437l1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008z"/></svg>
+                </div>
+                <div class="value-title">Engineering</div>
+                <div class="value-desc">Real-world skills in CAD, mechanical design, software, and systems thinking.</div>
+            </div>
+            <div class="card value-card fade-in-section lift" style="transition-delay:.3s">
+                <div class="value-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5"/></svg>
+                </div>
+                <div class="value-title">Growth</div>
+                <div class="value-desc">We're rookies — and we wear that with pride. Every season, we get better.</div>
+            </div>
+        </div>
+
+        <!-- Mission box -->
+        <div class="mission-box fade-in-section" style="margin-top:4rem;">
+            <div class="glow-1"></div><div class="glow-2"></div>
+            <span class="mission-label">Our Mission</span>
+            <blockquote class="mission-quote">
+                "To inspire the next generation of engineers and problem-solvers through the power of competitive robotics."
+            </blockquote>
+            <div class="mission-divider">
+                <div class="line"></div>
+                <span>Mage Robotics</span>
+                <div class="line"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ─── GOALS / SEASON CAROUSEL (2 — Goals & Missions) ─── -->
+<section id="goals" style="padding:6rem 0;background:var(--dark-2);">
+    <div class="container">
+        <div class="section-intro fade-in-section">
+            <span class="section-label">Goals & Missions</span>
+            <h2 class="section-heading">What We're Chasing</h2>
+            <p class="section-body">Teamwork, collaboration, and results. Here's a look at our season milestones and what drives us forward.</p>
+        </div>
+
+        <div class="carousel-wrap fade-in-section">
+            <div class="carousel-track" id="carouselTrack">
+                <!-- Slide 1 -->
+                <div class="carousel-slide">
+                    <!-- <img src="assets/assembly.jpg" alt="Robot Assembly" /> -->
+                    <div class="carousel-slide-placeholder">Assembly & Build Season — photo coming soon</div>
+                    <div class="carousel-overlay"></div>
+                    <div class="carousel-caption">
+                        <div class="carousel-cap-sub">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63"/></svg>
+                            Build Season
+                        </div>
+                        <div class="carousel-cap-title">Assembling our first competition robot from scratch</div>
+                    </div>
+                </div>
+                <!-- Slide 2 -->
+                <div class="carousel-slide">
+                    <div class="carousel-slide-placeholder">Student Innovation — CAD & Prototyping — photo coming soon</div>
+                    <div class="carousel-overlay"></div>
+                    <div class="carousel-caption">
+                        <div class="carousel-cap-sub">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23-.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5"/></svg>
+                            Innovation
+                        </div>
+                        <div class="carousel-cap-title">CAD design, prototyping, and iterating toward our final bot</div>
+                    </div>
+                </div>
+                <!-- Slide 3 -->
+                <div class="carousel-slide">
+                    <div class="carousel-slide-placeholder">Competition — FTC Qualifier — photo coming soon</div>
+                    <div class="carousel-overlay"></div>
+                    <div class="carousel-caption">
+                        <div class="carousel-cap-sub">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 01-.982-3.172M9.497 14.25a7.454 7.454 0 00.981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 007.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M7.73 9.728a6.726 6.726 0 002.748 1.35m8.272-6.842V4.5c0 2.108-.966 3.99-2.48 5.228m2.48-5.492a46.32 46.32 0 012.916.52 6.003 6.003 0 01-5.395 4.972m0 0a6.726 6.726 0 01-2.749 1.35m0 0a6.772 6.772 0 01-3.044 0"/></svg>
+                            Competition
+                        </div>
+                        <div class="carousel-cap-title">Competing at FTC Ontario qualifiers — our first time on the field</div>
+                    </div>
+                </div>
+                <!-- Slide 4 -->
+                <div class="carousel-slide">
+                    <div class="carousel-slide-placeholder">Community & Outreach — photo coming soon</div>
+                    <div class="carousel-overlay"></div>
+                    <div class="carousel-caption">
+                        <div class="carousel-cap-sub">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/></svg>
+                            Outreach
+                        </div>
+                        <div class="carousel-cap-title">Giving back — inspiring younger students to get into STEM and robotics</div>
+                    </div>
+                </div>
+            </div>
+            <button class="carousel-btn carousel-prev" id="carouselPrev" aria-label="Previous">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <button class="carousel-btn carousel-next" id="carouselNext" aria-label="Next">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+        </div>
+        <div class="carousel-dots">
+            <button class="dot active" onclick="goSlide(0)"></button>
+            <button class="dot" onclick="goSlide(1)"></button>
+            <button class="dot" onclick="goSlide(2)"></button>
+            <button class="dot" onclick="goSlide(3)"></button>
+        </div>
+    </div>
+</section>
+
+<!-- ─── TIMELINE (3 — Aeros Shit / FTC History) ─── -->
+<section id="timeline" style="padding:6rem 0;background:var(--dark);">
+    <div class="container">
+        <div class="section-intro fade-in-section">
+            <span class="section-label">Our Journey</span>
+            <h2 class="section-heading">Season Timeline</h2>
+            <p class="section-body">Every milestone, every build session, every breakthrough — this is how Mage Robotics came to life.</p>
+        </div>
+        <div class="timeline-container fade-in-section">
+            <div class="timeline-line"></div>
+            <div class="timeline-items">
+                <div class="timeline-item" data-index="0">
+                    <div class="timeline-node-wrap">
+                        <div class="timeline-node highlight">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+                        </div>
+                    </div>
+                    <div class="card timeline-card">
+                        <div class="timeline-meta">
+                            <span class="phase-badge highlight">Founding</span>
+                            <span class="timeline-period">Month XXXX</span>
+                        </div>
+                        <div class="timeline-title">Team Founded</div>
+                        <div class="timeline-desc">Mage Robotics is established. Team members recruited, roles assigned, and the dream begins.</div>
+                    </div>
+                </div>
+                <div class="timeline-item" data-index="1">
+                    <div class="timeline-node-wrap">
+                        <div class="timeline-node normal">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03"/></svg>
+                        </div>
+                    </div>
+                    <div class="card timeline-card">
+                        <div class="timeline-meta">
+                            <span class="phase-badge normal">Build</span>
+                            <span class="timeline-period">Month XXXX</span>
+                        </div>
+                        <div class="timeline-title">Build Season Begins</div>
+                        <div class="timeline-desc">Game reveal drops. Design brainstorms, CAD sessions, and first prototypes get underway.</div>
+                    </div>
+                </div>
+                <div class="timeline-item" data-index="2">
+                    <div class="timeline-node-wrap">
+                        <div class="timeline-node normal">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497"/></svg>
+                        </div>
+                    </div>
+                    <div class="card timeline-card">
+                        <div class="timeline-meta">
+                            <span class="phase-badge normal">Milestone</span>
+                            <span class="timeline-period">Month XXXX</span>
+                        </div>
+                        <div class="timeline-title">First Qualifier</div>
+                        <div class="timeline-desc">Mage Robotics competes for the first time at an FTC Ontario qualifier event.</div>
+                    </div>
+                </div>
+                <div class="timeline-item" data-index="3">
+                    <div class="timeline-node-wrap">
+                        <div class="timeline-node highlight">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443"/></svg>
+                        </div>
+                    </div>
+                    <div class="card timeline-card">
+                        <div class="timeline-meta">
+                            <span class="phase-badge highlight">Season End</span>
+                            <span class="timeline-period">Month XXXX</span>
+                        </div>
+                        <div class="timeline-title">Season Wrap-Up & Reflections</div>
+                        <div class="timeline-desc">Season closes. Awards pursued, lessons learned, and eyes already on next year.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ─── TEAM (2 — About Us: intro of members/dept w/ pics) ─── -->
+<section id="team" style="padding:6rem 0;background:var(--dark-2);">
+    <div class="container">
+        <div class="section-intro fade-in-section">
+            <span class="section-label">About Us</span>
+            <h2 class="section-heading">Meet the Team</h2>
+            <p class="section-body">Individual shots, roles, and a glimpse of what each department brings to the table.</p>
+        </div>
+        <div class="team-grid">
+            <!-- Repeat / replace with actual team members -->
+            <div class="card team-card fade-in-section lift">
+                <div class="team-photo pic-frame">
+                    <!-- <img src="assets/member1.jpg" alt="Member Name" /> -->
+                    <div class="team-photo-placeholder">?</div>
+                    <div class="team-photo-overlay"><span class="team-dept-badge">Mechanical</span></div>
+                </div>
+                <div class="team-info">
+                    <div class="team-name">Member Name</div>
+                    <div class="team-role">Team Captain / Mech Lead</div>
+                </div>
+            </div>
+            <div class="card team-card fade-in-section lift" style="transition-delay:.05s">
+                <div class="team-photo pic-frame">
+                    <div class="team-photo-placeholder">?</div>
+                    <div class="team-photo-overlay"><span class="team-dept-badge">Software</span></div>
+                </div>
+                <div class="team-info">
+                    <div class="team-name">Member Name</div>
+                    <div class="team-role">Software Lead</div>
+                </div>
+            </div>
+            <div class="card team-card fade-in-section lift" style="transition-delay:.1s">
+                <div class="team-photo pic-frame">
+                    <div class="team-photo-placeholder">?</div>
+                    <div class="team-photo-overlay"><span class="team-dept-badge">CAD</span></div>
+                </div>
+                <div class="team-info">
+                    <div class="team-name">Member Name</div>
+                    <div class="team-role">CAD Lead</div>
+                </div>
+            </div>
+            <div class="card team-card fade-in-section lift" style="transition-delay:.15s">
+                <div class="team-photo pic-frame">
+                    <div class="team-photo-placeholder">?</div>
+                    <div class="team-photo-overlay"><span class="team-dept-badge">Business</span></div>
+                </div>
+                <div class="team-info">
+                    <div class="team-name">Member Name</div>
+                    <div class="team-role">Business Lead</div>
+                </div>
+            </div>
+            <div class="card team-card fade-in-section lift" style="transition-delay:.2s">
+                <div class="team-photo pic-frame">
+                    <div class="team-photo-placeholder">?</div>
+                    <div class="team-photo-overlay"><span class="team-dept-badge">Outreach</span></div>
+                </div>
+                <div class="team-info">
+                    <div class="team-name">Member Name</div>
+                    <div class="team-role">Outreach Lead</div>
+                </div>
+            </div>
+        </div>
+        <div style="text-align:center;margin-top:3rem;" class="fade-in-section">
+            <button class="btn btn-outline" onclick="navScrollTo('#joinus')" style="color:var(--off-white);border-color:var(--purple-border);border-radius:.875rem;">Want to join? →</button>
+        </div>
+    </div>
+</section>
+
+<!-- ─── STUDENT IMPACT (4 — Student Impact) ─── -->
+<section id="impact" style="padding:6rem 0;background:var(--dark);">
+    <div class="container">
+        <div class="section-intro fade-in-section">
+            <span class="section-label">Student Impact</span>
+            <h2 class="section-heading">Innovation. Accessibility. Growth.</h2>
+            <p class="section-body">Robotics changes students. Here's how Mage Robotics is making that change real — in Kanata and beyond.</p>
+        </div>
+        <div class="impact-main fade-in-section">
+            <div>
+                <!-- Photo grid: assembly, CAD, innovation, accessibility, awards -->
+                <div class="impact-imgs">
+                    <div class="pic-frame impact-img-slot" style="grid-column:span 2;aspect-ratio:16/7;">
+                        <!-- <img src="assets/impact-main.jpg" alt="Impact" /> -->
+                        <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:.875rem;background:var(--dark-3);">Student impact — assembly/CAD photo</div>
+                    </div>
+                    <div class="pic-frame impact-img-slot">
+                        <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:.8rem;background:var(--dark-3);">Accessibility</div>
+                    </div>
+                    <div class="pic-frame impact-img-slot">
+                        <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:.8rem;background:var(--dark-3);">Awards / Competition</div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <span class="section-label">Our Values in Action</span>
+                <h3 class="section-heading" style="font-size:clamp(1.25rem,2.5vw,1.75rem);">Why It Matters</h3>
+                <p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;font-size:.9rem;">
+                    We believe robotics is one of the most powerful ways to unlock potential in young people. Our team is committed to making this space inclusive, rigorous, and inspiring — not just for ourselves, but for the community around us.
+                </p>
+                <p style="color:var(--muted);line-height:1.8;font-size:.9rem;">
+                    From soft skills developed in the build room to the technical fluency gained through code and CAD — every student on Mage Robotics leaves with more than they came in with.
+                </p>
+                <div class="impact-nums" style="margin-top:2rem;">
+                    <div class="card impact-stat fade-in-section">
+                        <div class="impact-num">–</div>
+                        <div class="impact-lbl">Students on Team</div>
+                    </div>
+                    <div class="card impact-stat fade-in-section" style="transition-delay:.1s">
+                        <div class="impact-num">–</div>
+                        <div class="impact-lbl">Outreach Events</div>
+                    </div>
+                    <div class="card impact-stat fade-in-section" style="transition-delay:.2s">
+                        <div class="impact-num">–</div>
+                        <div class="impact-lbl">Hours Built</div>
+                    </div>
+                    <div class="card impact-stat fade-in-section" style="transition-delay:.3s">
+                        <div class="impact-num">–</div>
+                        <div class="impact-lbl">Awards Aimed For</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ─── SPONSORSHIP (6 — Sponsorship Info) ─── -->
+<section id="sponsors" style="padding:6rem 0;background:var(--dark-2);">
+    <div class="container">
+        <div class="section-intro fade-in-section">
+            <span class="section-label">Sponsorship</span>
+            <h2 class="section-heading">Our Supporters</h2>
+            <p class="section-body">Mage Robotics is powered by the generosity of sponsors who believe in the next generation.</p>
+        </div>
+        <div class="sponsor-tiers fade-in-section">
+            <div class="sponsor-tier">
+                <h3>Gold Sponsors</h3>
+                <div class="sponsor-logos">
+                    <div class="sponsor-slot">Sponsor Logo</div>
+                    <div class="sponsor-slot">Sponsor Logo</div>
+                </div>
+            </div>
+            <div class="sponsor-tier">
+                <h3>Silver Sponsors</h3>
+                <div class="sponsor-logos">
+                    <div class="sponsor-slot">Sponsor Logo</div>
+                    <div class="sponsor-slot">Sponsor Logo</div>
+                    <div class="sponsor-slot">Sponsor Logo</div>
+                </div>
+            </div>
+            <div class="sponsor-tier">
+                <h3>Supporters</h3>
+                <div class="sponsor-logos">
+                    <div class="sponsor-slot">Supporter</div>
+                    <div class="sponsor-slot">Supporter</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA -->
+        <div class="sponsor-cta fade-in-section">
+            <div class="glow"></div>
+            <h2>Become a Sponsor</h2>
+            <p>
+                We're looking for sponsors who want to support young engineers from Kanata. Your contribution goes directly toward parts, tools, CAD software, competition fees, and travel. Here's how it helps — and how it helps <em>you</em>.
+            </p>
+            <button class="btn btn-primary" onclick="navScrollTo('#contact')" style="border-radius:.875rem;padding:.875rem 2rem;position:relative;">
+                Get in Touch
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </button>
+            <div class="sponsor-why">
+                <div class="why-item">
+                    <div class="why-num">01</div>
+                    <div class="why-title">Brand Visibility</div>
+                    <div class="why-desc">Your logo on our robot, uniforms, and website — seen at competitions and online.</div>
+                </div>
+                <div class="why-item">
+                    <div class="why-num">02</div>
+                    <div class="why-title">Community Impact</div>
+                    <div class="why-desc">Directly support STEM education and youth development in Kanata.</div>
+                </div>
+                <div class="why-item">
+                    <div class="why-num">03</div>
+                    <div class="why-title">Talent Pipeline</div>
+                    <div class="why-desc">Connect with the next generation of engineers and innovators.</div>
+                </div>
+                <div class="why-item">
+                    <div class="why-num">04</div>
+                    <div class="why-title">Potential Awards</div>
+                    <div class="why-desc">Sponsors are recognized in our Engineering Notebook — a judged deliverable at competitions.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ─── CONTACT (7 — Contacts) ─── -->
+<section id="contact" style="padding:6rem 0;background:var(--dark-2);">
+    <div class="container">
+        <div class="section-intro fade-in-section">
+            <span class="section-label">Contact</span>
+            <h2 class="section-heading">Get In Touch</h2>
+            <p class="section-body">Have a question, want to sponsor us, or just want to chat? Reach out.</p>
+        </div>
+        <div class="contact-grid">
+            <div class="contact-form-wrap fade-in-section">
+                <h3>Send a Message</h3>
+                <form id="contactForm" novalidate>
+                    <div class="form-row two">
+                        <div>
+                            <label for="name">Name</label>
+                            <input class="form-input" id="name" type="text" placeholder="Your name" autocomplete="name" />
+                        </div>
+                        <div>
+                            <label for="email">Email</label>
+                            <input class="form-input" id="email" type="email" placeholder="you@email.com" autocomplete="email" />
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div>
+                            <label for="subject">Subject</label>
+                            <input class="form-input" id="subject" type="text" placeholder="What's this about?" />
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div>
+                            <label for="message">Message</label>
+                            <textarea class="form-textarea" id="message" placeholder="Your message..."></textarea>
+                        </div>
+                    </div>
+                    <div class="form-error" id="formError"></div>
+                    <button type="submit" class="btn btn-primary form-submit" id="submitBtn">
+                        <svg id="sendIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                        <svg id="spinnerIcon" class="spinner" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" style="display:none"><circle cx="12" cy="12" r="10" stroke-opacity=".25"/><path d="M12 2a10 10 0 0110 10" stroke-opacity=".75"/></svg>
+                        <span id="submitText">Send Message</span>
+                    </button>
+                </form>
+                <div id="formSuccess" style="display:none;" class="form-success">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="none" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <h3>Message Sent!</h3>
+                    <p>We'll get back to you as soon as we can.</p>
+                    <button class="btn btn-primary" onclick="resetForm()" style="border-radius:.875rem;">Send Another</button>
+                </div>
+            </div>
+            <div class="contact-sidebar fade-in-section" style="transition-delay:.15s">
+                <div class="contact-info-card card">
+                    <h3>Direct Links</h3>
+                    <a class="contact-link-row" href="mailto:magerobotics@gmail.com">
+                        <div class="contact-link-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/></svg>
+                        </div>
+                        <div>
+                            <div class="contact-link-title">Email</div>
+                            <div class="contact-link-sub">magerobotics@gmail.com</div>
+                        </div>
+                    </a>
+                    <a class="contact-link-row" href="https://instagram.com/mage_robotics" target="_blank" rel="noopener">
+                        <div class="contact-link-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                        </div>
+                        <div>
+                            <div class="contact-link-title">Instagram</div>
+                            <div class="contact-link-sub">@mage_robotics</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="contact-info-card card">
+                    <h3>Location</h3>
+                    <p style="color:var(--muted);font-size:.875rem;line-height:1.7;margin-bottom:.75rem;">Based in Kanata, Ontario, Canada. Competing in FTC Ontario.</p>
+                    <div style="display:flex;align-items:center;gap:.5rem;color:var(--purple-light);font-size:.875rem;font-weight:600;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg>
+                        Kanata, Ontario
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ─── FOOTER ─── -->
+<footer>
+    <div class="container">
+        <div class="footer-grid">
+            <div>
+                <div class="footer-logo">
+                    <div class="footer-logo-placeholder">M</div>
+                    <div>
+                        <div class="footer-logo-name">MAGE ROBOTICS</div>
+                        <div class="footer-logo-sub">FTC Team XXXXX</div>
+                    </div>
+                </div>
+                <p class="footer-desc">A competitive FIRST Tech Challenge team from Kanata, Ontario — engineering the future one season at a time.</p>
+                <div class="footer-socials">
+                    <a class="footer-social" href="mailto:magerobotics@gmail.com" aria-label="Email">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/></svg>
+                    </a>
+                    <a class="footer-social" href="https://instagram.com/mage_robotics" target="_blank" rel="noopener" aria-label="Instagram">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                    </a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h4>Navigate</h4>
+                <ul class="footer-links">
+                    <li><button onclick="navScrollTo('#about')">About</button></li>
+                    <li><button onclick="navScrollTo('#goals')">Goals</button></li>
+                    <li><button onclick="navScrollTo('#timeline')">Timeline</button></li>
+                    <li><button onclick="navScrollTo('#team')">Team</button></li>
+                    <li><button onclick="navScrollTo('#impact')">Impact</button></li>
+                    <li><button onclick="navScrollTo('#sponsors')">Sponsors</button></li>
+                    <li><button onclick="navScrollTo('#joinus')">Join Us</button></li>
+                    <li><button onclick="navScrollTo('#contact')">Contact</button></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Contact</h4>
+                <div class="footer-contact-items">
+                    <div class="footer-contact-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/></svg>
+                        <a href="mailto:magerobotics@gmail.com">magerobotics@gmail.com</a>
+                    </div>
+                    <div class="footer-contact-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                        <a href="https://instagram.com/mage_robotics" target="_blank" rel="noopener">@mage_robotics</a>
+                    </div>
+                    <div class="footer-contact-item" style="flex-direction:column;align-items:flex-start;gap:.2rem;">
+                        <span style="color:rgba(255,255,255,.3);font-size:.75rem;">Located in</span>
+                        <span style="color:#fff;">Kanata, Ontario, Canada</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="footer-copy">© <span id="year"></span> Mage Robotics · FTC Team XXXXX · <span>Kanata, Ontario</span></div>
+        </div>
+    </div>
+</footer>
+
+<button class="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Back to top">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+</button>
+
+<script>
+    function navScrollTo(selector) {
+        const el = document.querySelector(selector);
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    const nav = document.getElementById('nav');
+    function updateNav() { nav.classList.toggle('scrolled', window.scrollY > 50); }
+    window.addEventListener('scroll', updateNav, { passive: true });
+    updateNav();
+
+    const hamburger = document.getElementById('hamburgerBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const menuIcon   = document.getElementById('menuIcon');
+    const closeIcon  = document.getElementById('closeIcon');
+    hamburger.addEventListener('click', () => {
+        const open = mobileMenu.classList.toggle('open');
+        menuIcon.style.display = open ? 'none' : '';
+        closeIcon.style.display = open ? '' : 'none';
+    });
+    function closeMobile() {
+        mobileMenu.classList.remove('open');
+        menuIcon.style.display = '';
+        closeIcon.style.display = 'none';
+    }
+
+    let current = 0;
+    const slides = 4;
+    const track = document.getElementById('carouselTrack');
+    const dots = document.querySelectorAll('.dot');
+    let autoTimer;
+    function goSlide(n) {
+        current = ((n % slides) + slides) % slides;
+        track.style.transform = `translateX(-${current * 100}%)`;
+        dots.forEach((d, i) => d.classList.toggle('active', i === current));
+    }
+    document.getElementById('carouselNext').addEventListener('click', () => { goSlide(current + 1); resetAutoplay(); });
+    document.getElementById('carouselPrev').addEventListener('click', () => { goSlide(current - 1); resetAutoplay(); });
+    function resetAutoplay() { clearInterval(autoTimer); autoTimer = setInterval(() => goSlide(current + 1), 5000); }
+    resetAutoplay();
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+    }, { threshold: 0.08 });
+    document.querySelectorAll('.fade-in-section').forEach(el => observer.observe(el));
+
+    const tlObserver = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+            if (e.isIntersecting) {
+                const delay = parseInt(e.target.dataset.index || 0) * 120;
+                setTimeout(() => e.target.classList.add('visible'), delay);
+                tlObserver.unobserve(e.target);
+            }
+        });
+    }, { threshold: 0.15 });
+    document.querySelectorAll('.timeline-item').forEach(el => tlObserver.observe(el));
+
+    /* Contact form */
+    const form = document.getElementById('contactForm');
+    const formSuccess = document.getElementById('formSuccess');
+    const formError   = document.getElementById('formError');
+    const submitBtn   = document.getElementById('submitBtn');
+    const sendIcon    = document.getElementById('sendIcon');
+    const spinnerIcon = document.getElementById('spinnerIcon');
+    const submitText  = document.getElementById('submitText');
+
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const name    = document.getElementById('name').value.trim();
+        const email   = document.getElementById('email').value.trim();
+        const subject = document.getElementById('subject').value.trim();
+        const message = document.getElementById('message').value.trim();
+        if (!name || !email || !subject || !message) { formError.textContent = 'Please fill in all fields.'; formError.classList.add('show'); return; }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { formError.textContent = 'Please enter a valid email address.'; formError.classList.add('show'); return; }
+        formError.classList.remove('show');
+        submitBtn.disabled = true; sendIcon.style.display = 'none'; spinnerIcon.style.display = ''; submitText.textContent = 'Sending…';
+        $.ajax({
+            url: "https://formsubmit.co/ajax/magerobotics@gmail.com",
+            method: "POST",
+            data: { name, email, subject, message },
+            dataType: "json"
+        }).done(function(data) {
+            if (data.success === "true") { form.style.display = 'none'; formSuccess.style.display = 'block'; }
+            else { formError.textContent = 'Failed to send. Please email us directly.'; formError.classList.add('show'); submitBtn.disabled = false; sendIcon.style.display = ''; spinnerIcon.style.display = 'none'; submitText.textContent = 'Send Message'; }
+        }).fail(function() { formError.textContent = 'Something went wrong. Please try again.'; formError.classList.add('show'); submitBtn.disabled = false; sendIcon.style.display = ''; spinnerIcon.style.display = 'none'; submitText.textContent = 'Send Message'; });
+    });
+    function resetForm() { form.reset(); form.style.display = ''; formSuccess.style.display = 'none'; formError.classList.remove('show'); submitBtn.disabled = false; submitText.textContent = 'Send Message'; spinnerIcon.style.display = 'none'; sendIcon.style.display = ''; }
+
+    document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>
