@@ -757,6 +757,100 @@
 
         /* Staggered Delays for all 24 shards (0.02s increments for smooth flow) */
         .shard:nth-child(n) { transition-delay: calc(0.02s * (var(--n) - 1)); }
+
+        /* Container for the glitch particles */
+        .glitch-overlay {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 2;
+            overflow: hidden;
+        }
+
+        /* The horizontal "data bars" */
+        .glitch-bar {
+            position: absolute;
+            width: 100%;
+            height: 6px;
+            background: rgba(138, 89, 230, 0.2);
+            box-shadow: 0 0 25px var(--purple-light);
+            opacity: 0.2;
+            animation: bar-glitch 20s infinite;
+        }
+
+        /* Bar movement: quickly slides down and disappears */
+        @keyframes bar-glitch {
+            0%   { top: -10%; opacity: .4; }
+            40%   { opacity: .9; }
+            60%  { opacity: .9; } /* Keep it visible longer */
+            100% { top: 100%; opacity: .4; }
+        }
+
+        .checker-glitch {
+            position: absolute;
+            z-index: 4;
+            pointer-events: none;
+
+            /* Transparent Ghostly Pattern */
+            background-image:
+                    linear-gradient(45deg, rgba(138, 89, 230, 0.3) 25%, transparent 25%),
+                    linear-gradient(-45deg, rgba(138, 89, 230, 0.3) 25%, transparent 25%),
+                    linear-gradient(45deg, transparent 75%, rgba(138, 89, 230, 0.3) 75%),
+                    linear-gradient(-45deg, transparent 75%, rgba(138, 89, 230, 0.3) 75%);
+            background-size: 10px 10px;
+            background-color: rgba(20, 10, 40, 0.2); /* Deep purple-tinted transparency */
+
+            /* The core "Ghost" filters */
+            backdrop-filter: blur(4px); /* Distorts what's behind it */
+            border: 1px solid rgba(138, 89, 230, 0.15);
+            box-shadow: 0 0 20px rgba(138, 89, 230, 0.1);
+
+            animation: ghostly-pulse 6s ease-in-out forwards;
+        }
+
+        @keyframes ghostly-pulse {
+            0% {
+                opacity: 0;
+                transform: scale(0.7) rotate(-20deg);
+                filter: blur(15px) brightness(0.6);
+            }
+            /* Fade in slightly but stays blurry */
+            15% {
+                opacity: 0.4;
+                transform: scale(1) rotate(0deg);
+                filter: blur(6px) brightness(1);
+            }
+            /* Dip / Fade out */
+            30% {
+                opacity: 0.2;
+                filter: blur(8px) brightness(0.8);
+            }
+            /* First Surge (Peaks at 4px blur - still soft) */
+            50% {
+                opacity: 0.6;
+                transform: scale(1.15) rotate(10deg);
+                filter: blur(4px) brightness(1.4);
+                box-shadow: 0 0 40px rgba(138, 89, 230, 0.3);
+            }
+            /* Reduce */
+            65% {
+                opacity: 0.3;
+                filter: blur(7px);
+            }
+            /* Strongest Peak (Secondary Surge - keeps 3px blur minimum) */
+            85% {
+                opacity: 0.8;
+                transform: scale(1.25) rotate(-10deg) skew(5deg);
+                filter: blur(3px) brightness(1.8) contrast(1.2);
+                box-shadow: 0 0 60px rgba(138, 89, 230, 0.5);
+            }
+            /* Dissipating fade out */
+            100% {
+                opacity: 0;
+                transform: scale(1.4) rotate(30deg);
+                filter: blur(20px) brightness(0);
+            }
+        }
     </style>
 </head>
 <body>
@@ -803,6 +897,9 @@
 
 <!-- ─── HERO ─── -->
 <section id="hero">
+    <div class="glitch-overlay">
+        <div class="glitch-bar"></div>
+    </div>
     <div class="hero-bg">
         <!-- <img src="assets/hero.jpg" alt="Group photo" loading="eager" /> -->
         <div class="hero-bg-placeholder"></div>
@@ -814,7 +911,7 @@
             <span class="gradient-text">Built to Compete.</span>
         </h1>
         <p class="hero-sub">
-            Mage Robotics is a FIRST Tech Challenge team from Kanata, Ontario — driven by curiosity, powered by collaboration, and forged in competition.
+            Mage Robotics is a FIRST Tech Challenge team from Kanata, Ontario. We are driven by curiosity and thrive collaborating.
         </p>
         <div class="hero-ctas">
             <button class="btn btn-outline" onclick="navScrollTo('#contact')" style="padding:.875rem 2.25rem;font-size:1.05rem;">Contact Us</button>
@@ -1169,16 +1266,6 @@
             <div class="card team-card fade-in-section lift" style="transition-delay:.2s">
                 <div class="team-photo pic-frame">
                     <div class="team-photo-placeholder">?</div>
-                    <div class="team-photo-overlay"><span class="team-dept-badge">Hardware</span></div>
-                </div>
-                <div class="team-info">
-                    <div class="team-name">Ethan Lin</div>
-                    <div class="team-role">Building & Testing</div>
-                </div>
-            </div>
-            <div class="card team-card fade-in-section lift" style="transition-delay:.2s">
-                <div class="team-photo pic-frame">
-                    <div class="team-photo-placeholder">?</div>
                     <div class="team-photo-overlay"><span class="team-dept-badge">Software</span></div>
                 </div>
                 <div class="team-info">
@@ -1214,6 +1301,16 @@
                 <div class="team-info">
                     <div class="team-name">Yusuf Qureshi</div>
                     <div class="team-role">Prototyping & Design</div>
+                </div>
+            </div>
+            <div class="card team-card fade-in-section lift" style="transition-delay:.2s">
+                <div class="team-photo pic-frame">
+                    <div class="team-photo-placeholder">?</div>
+                    <div class="team-photo-overlay"><span class="team-dept-badge">Hardware</span></div>
+                </div>
+                <div class="team-info">
+                    <div class="team-name">Ethan Lin</div>
+                    <div class="team-role">Building & Testing</div>
                 </div>
             </div>
         </div>
@@ -1614,7 +1711,53 @@
     });
     function resetForm() { form.reset(); form.style.display = ''; formSuccess.style.display = 'none'; formError.classList.remove('show'); submitBtn.disabled = false; submitText.textContent = 'Send Message'; spinnerIcon.style.display = 'none'; sendIcon.style.display = ''; }
 
-    document.getElementById('year').textContent = new Date().getFullYear();
+    function spawnGhostlyGlitch() {
+        const hero = document.getElementById('hero');
+        if (!hero) return;
+
+        const glitch = document.createElement('div');
+        glitch.className = 'checker-glitch';
+
+        // Random dimensions (elongated or squashed)
+        const width = Math.floor(Math.random() * 60) + 40;
+        const height = Math.floor(Math.random() * 60) + 40;
+
+        // Positioning
+        const posX = Math.random() * 85;
+        const posY = Math.random() * 80;
+
+        // Random Rotation & Shape Distortion
+        const rotation = Math.floor(Math.random() * 360);
+        // Creates "bloppy" or jagged irregular corners
+        const r1 = Math.random() * 100;
+        const r2 = Math.random() * 100;
+        const r3 = Math.random() * 100;
+        const r4 = Math.random() * 100;
+
+        Object.assign(glitch.style, {
+            width: `${width}px`,
+            height: `${height}px`,
+            left: `${posX}%`,
+            top: `${posY}%`,
+            borderRadius: `${r1}% ${r2}% ${r3}% ${r4}%`, // Non-square shape
+            rotate: `${rotation}deg`
+        });
+
+        hero.appendChild(glitch);
+
+        // Clean up after 6 seconds
+        setTimeout(() => {
+            glitch.remove();
+        }, 6000);
+    }
+
+    function startGhostlyEffect() {
+        spawnGhostlyGlitch();
+        // Rare interval for that "mystical" feel
+        setTimeout(startGhostlyEffect, Math.random() * 5000 + 3000);
+    }
+
+    document.addEventListener('DOMContentLoaded', startGhostlyEffect);
 </script>
 </body>
 </html>
